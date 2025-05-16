@@ -1,0 +1,255 @@
+/*
+
+Matricula: 202020386
+
+Nome: Leonardo Edilson Auler
+
+E-mail: leonardo.202020386@unilasalle.edu.br
+
+
+
+Realizei toda a codificação do programa, incluindo a definição da struct, a implementação da pilha com vetor, alocação dinâmica, e as funções push, pop, empty e busca por matrícula.*/
+
+
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+#include <string.h>
+
+
+
+#define TRUE 1
+
+#define FALSE 0
+
+
+
+typedef struct {
+
+  int matricula;
+
+  float g1, g2, media;
+
+} Aluno;
+
+
+
+typedef struct {
+
+  Aluno *dados;
+
+  int topo;
+
+  int capacidade;
+
+} Pilha;
+
+
+
+// Verifica se a pilha está vazia
+
+int empty(Pilha *p) {
+
+  return p->topo == -1;
+
+}
+
+
+
+// Adiciona um aluno no topo da pilha
+
+int push(Pilha *p, Aluno a) {
+
+  if (p->topo == p->capacidade - 1) {
+
+    printf("Pilha cheia!\n");
+
+    return FALSE;
+
+  }
+
+  p->topo++;
+
+  p->dados[p->topo] = a;
+
+  return TRUE;
+
+}
+
+
+
+// Remove o aluno do topo da pilha
+
+int pop(Pilha *p, Aluno *a) {
+
+  if (empty(p)) {
+
+    printf("Pilha vazia!\n");
+
+    return FALSE;
+
+  }
+
+  *a = p->dados[p->topo];
+
+  p->topo--;
+
+  return TRUE;
+
+}
+
+
+
+// Busca por um aluno na pilha pela matrícula, de forma LIFO
+
+// A busca percorre a pilha de cima para baixo (do topo ao início)
+
+// respeitando o comportamento de uma pilha (último que entrou é o primeiro verificado)
+
+void buscarPorMatricula(Pilha *p, int matricula) {
+
+  for (int i = p->topo; i >= 0; i--) {
+
+    if (p->dados[i].matricula == matricula) {
+
+      printf("Aluno encontrado:\n");
+
+      printf("Matricula: %d\n", p->dados[i].matricula);
+
+      printf("G1: %.2f, G2: %.2f, Media: %.2f\n", p->dados[i].g1, p->dados[i].g2, p->dados[i].media);
+
+      return;
+
+    }
+
+  }
+
+  printf("Aluno com matricula %d nao encontrado.\n", matricula);
+
+}
+
+
+
+int main() {
+
+  Pilha pilha;
+
+  int limite;
+
+
+
+  printf("Informe o limite da pilha de alunos: ");
+
+  scanf("%d", &limite);
+
+
+
+  // Alocação dinâmica da pilha:
+
+  // Alocamos memória para armazenar 'limite' alunos usando malloc.
+
+  // A função malloc retorna um ponteiro para o início da área alocada.
+
+  // Cada posição armazenará um struct Aluno.
+
+  pilha.dados = (Aluno *) malloc(limite * sizeof(Aluno));
+
+  pilha.topo = -1;
+
+  pilha.capacidade = limite;
+
+
+
+  int opcao;
+
+  do {
+
+    printf("\n1 - Empilhar aluno\n2 - Desempilhar aluno\n3 - Buscar por matricula\n0 - Sair\nOpcao: ");
+
+    scanf("%d", &opcao);
+
+
+
+    if (opcao == 1) {
+
+      Aluno a;
+
+      char notaStr[20];
+
+      printf("Matricula: ");
+
+      scanf("%d", &a.matricula);
+
+
+
+      // Leitura da nota G1 com substituição de vírgula por ponto
+
+      printf("Nota G1: ");
+
+      scanf("%s", notaStr);
+
+      for (int i = 0; notaStr[i] != '\0'; i++) {
+
+        if (notaStr[i] == ',') notaStr[i] = '.';
+
+      }
+
+      a.g1 = atof(notaStr);
+
+
+
+      // Leitura da nota G2 com substituição de vírgula por ponto
+
+      printf("Nota G2: ");
+
+      scanf("%s", notaStr);
+
+      for (int i = 0; notaStr[i] != '\0'; i++) {
+
+        if (notaStr[i] == ',') notaStr[i] = '.';
+
+      }
+
+      a.g2 = atof(notaStr);
+
+
+
+      a.media = (a.g1 + a.g2) / 2;
+
+      push(&pilha, a);
+
+    } else if (opcao == 2) {
+
+      Aluno a;
+
+      if (pop(&pilha, &a)) {
+
+        printf("Aluno desempilhado: %d - Media: %.2f\n", a.matricula, a.media);
+
+      }
+
+    } else if (opcao == 3) {
+
+      int matricula;
+
+      printf("Informe a matricula a buscar: ");
+
+      scanf("%d", &matricula);
+
+      buscarPorMatricula(&pilha, matricula);
+
+    }
+
+  } while (opcao != 0);
+
+
+
+  // Liberação da memória alocada
+
+  free(pilha.dados);
+
+  return 0;
+
+}
